@@ -1,3 +1,5 @@
-30 Forest
-20 Explore
-10 Titan
+15 Forest
+15 Mountain
+10 Explore
+10 Sakura-Tribe Elder
+10 Primeval Titan

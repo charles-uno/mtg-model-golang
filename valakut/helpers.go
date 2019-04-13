@@ -32,7 +32,7 @@ func load(name string) ([]string, error) {
         if err != nil {
             return make([]string, 0), errors.New("Invalid integer")
         }
-        card := n_card[1]
+        card := slug(n_card[1])
         for i := 0; i<n; i++ { list = append(list, card) }
     }
     return list, nil
@@ -45,6 +45,16 @@ func count(arr []string, r string) (n int) {
         if a == r { n += 1 }
     }
     return n
+}
+
+// ---------------------------------------------------------------------
+
+func slug(text string) string {
+    ret := text
+    for _, c := range []string{" ", "-"} {
+        ret = strings.ReplaceAll(ret, c, "")
+    }
+    return ret
 }
 
 // ---------------------------------------------------------------------
