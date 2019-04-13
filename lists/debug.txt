@@ -1,5 +1,13 @@
-15 Forest
-15 Mountain
-10 Explore
-10 Sakura-Tribe Elder
+30 Forest
+20 Search for Tomorrow
 10 Primeval Titan
+
+#28 Forest
+#4 Sleight of Hand
+#4 Sakura-Tribe Elder
+#4 Explore
+#4 Shefet Monitor
+#4 Primeval Titan
+#4 Summoner's Pact
+#4 Through the Breach
+#4 Search for Tomorrow

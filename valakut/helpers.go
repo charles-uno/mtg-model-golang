@@ -27,13 +27,13 @@ func load(name string) ([]string, error) {
     }
     for _, line := range strings.Split(string(dat), "\n") {
         if len(line) == 0 { continue }
+        if line[:1] == "#" { continue }
         n_card := strings.SplitN(line, " ", 2)
         n, err := strconv.Atoi(n_card[0])
         if err != nil {
             return make([]string, 0), errors.New("Invalid integer")
         }
-        card := slug(n_card[1])
-        for i := 0; i<n; i++ { list = append(list, card) }
+        for i := 0; i<n; i++ { list = append(list, n_card[1]) }
     }
     return list, nil
 }
@@ -51,7 +51,7 @@ func count(arr []string, r string) (n int) {
 
 func slug(text string) string {
     ret := text
-    for _, c := range []string{" ", "-"} {
+    for _, c := range []string{" ", "-", "'"} {
         ret = strings.ReplaceAll(ret, c, "")
     }
     return ret
@@ -62,20 +62,12 @@ func slug(text string) string {
 func remove(arr []string, elt string) []string {
     for i, a := range arr {
         if a == elt {
-
-//            fmt.Println(arr, "matches", elt, "at", i)
-
             arr[i] = arr[len(arr)-1]
             new_arr := arr[:len(arr)-1]
-
-//            fmt.Println("\tthen", new_arr)
-
-
             return new_arr
         }
     }
-    fmt.Println("ERROR: Failed to remove", elt, "from", arr)
-
+    fmt.Println("WARNING: Failed to remove", elt, "from", arr)
     return []string{}
 }
 
@@ -99,8 +91,7 @@ func flip() bool {
 
 func tally(arr []string) string {
     counts := make(map[string]int)
-    for _, card := range arr { counts[card] += 1 }
-
+    for _, card := range arr { counts[slug(card)] += 1 }
     name_count := []string{}
     for name, count := range counts {
         nc := name
@@ -109,4 +100,35 @@ func tally(arr []string) string {
     }
     sort.Strings(name_count)
     return strings.Join(name_count, " ")
+}
+
+// ---------------------------------------------------------------------
+
+func uniques(arr []string) []string {
+    counts := make(map[string]int)
+    for _, card := range arr { counts[card] += 1 }
+    uarr := []string{}
+    for card, _ := range counts { uarr = append(uarr, card) }
+    return uarr
+}
+
+
+
+
+
+
+// ---------------------------------------------------------------------
+
+func is_land(card string) bool {
+    lands := []string{"Forest", "Mountain"}
+    for _, c := range lands {
+        if c == card { return true }
+    }
+    return false
+}
+
+// ---------------------------------------------------------------------
+
+func is_spell(card string) bool {
+    return !is_land(card)
 }
