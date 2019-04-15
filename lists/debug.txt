@@ -1,13 +1,14 @@
-30 Forest
-20 Search for Tomorrow
-10 Primeval Titan
-
-#28 Forest
-#4 Sleight of Hand
-#4 Sakura-Tribe Elder
-#4 Explore
-#4 Shefet Monitor
-#4 Primeval Titan
-#4 Summoner's Pact
-#4 Through the Breach
-#4 Search for Tomorrow
+8 Mountain
+4 Wooded Foothills
+4 Stomping Ground
+4 Cinder Glade
+4 Sheltered Thicket
+4 Sakura-Tribe Elder
+4 Forest
+4 Explore
+4 Shefet Monitor
+4 Primeval Titan
+4 Summoner's Pact
+4 Through the Breach
+4 Search for Tomorrow
+4 Lightning Bolt

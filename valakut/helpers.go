@@ -120,15 +120,41 @@ func uniques(arr []string) []string {
 // ---------------------------------------------------------------------
 
 func is_land(card string) bool {
-    lands := []string{"Forest", "Mountain"}
+    lands := []string{"Forest", "Mountain", "Taiga", "Wooded Foothills", "Stomping Ground", "Cinder Glade", "Valakut, the Molten Pinnacle", "Sheltered Thicket"}
     for _, c := range lands {
         if c == card { return true }
     }
     return false
 }
 
+func land_output(card string) string {
+    switch card {
+        case "Cinder Glade":
+            return "G"
+        case "Forest":
+            return "G"
+        case "Mountain":
+            return "R"
+        case "Sheltered Thicket":
+            return "G"
+        case "Stomping Ground":
+            return "G"
+        case "Taiga":
+            return "G"
+        case "Valakut, the Molten Pinnacle":
+            return "R"
+        default:
+            return ""
+    }
+}
+
+
+
+
+
+
 // ---------------------------------------------------------------------
 
 func is_spell(card string) bool {
-    return !is_land(card)
+    return card == "Sheltered Thicket" || !is_land(card)
 }

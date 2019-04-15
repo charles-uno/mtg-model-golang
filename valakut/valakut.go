@@ -43,7 +43,22 @@ func next_turn(states []state) []state {
         }
         states_old = states_old[1:]
     }
-    return states_new
+    return unique_states(states_new)
+}
+
+// ---------------------------------------------------------------------
+
+func unique_states(states []state) []state {
+    // Use map keys to get rid of duplicates. There are a lot of them.
+    tracker := make(map[string]state)
+    for _, s := range states {
+        tracker[s.id()] = s
+    }
+    new_states := []state{}
+    for _, s := range tracker {
+        new_states = append(new_states, s)
+    }
+    return new_states
 }
 
 // ---------------------------------------------------------------------
