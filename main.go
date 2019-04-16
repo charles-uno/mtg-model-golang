@@ -3,6 +3,8 @@ package main
 
 import (
     "fmt"
+    "os"
+    "strconv"
     "valakut-go/valakut"
 )
 
@@ -10,20 +12,25 @@ import (
 
 func main() {
 
-    state, err := valakut.Simulate("debug")
+    valakut.InitRandom()
 
-    if err == nil {
+    name := "debug"
 
+    ntrials := 1
+    if len(os.Args) > 1 { ntrials, _ = strconv.Atoi(os.Args[1]) }
 
-        fmt.Println(state.Log)
+    filename := "data/" + name + ".out"
 
-//        for _, line := range state.Log {
-//            fmt.Println(line)
-//        }
-
-
-    } else {
-        fmt.Println(err)
+    for i := 0; i < ntrials; i++ {
+        state, err := valakut.Simulate(name)
+        if err == nil {
+            fmt.Print(string(state.Line()))
+            valakut.Append(filename, state.Line())
+            if i == ntrials-1 { fmt.Println("\n" + state.Log) }
+        } else {
+            valakut.Append(filename, "\n")
+            fmt.Println(err)
+        }
     }
 
 }

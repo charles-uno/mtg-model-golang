@@ -20,9 +20,16 @@ func Simulate(name string) (state, error) {
 func play_turns(states []state) (state, error) {
     for turn := 1; turn < 7; turn++ {
         states = next_turn(states)
+        // Prefer states with fewer mulligans.
+        done_state := state{}
+        done_mulls := 3
         for _, s := range states {
-            if s.done { return s, nil }
+            if s.done && s.mulls < done_mulls {
+                done_mulls = s.mulls
+                done_state = s
+            }
         }
+        if done_state.turn > 0 { return done_state, nil }
     }
     return state{}, errors.New("Failed to finish")
 }
@@ -69,20 +76,9 @@ func turn_zero(deck []string) []state {
     seven.flip()
     seven.shuffle()
     seven.draw(7)
-    six := seven.clone()
-    six.shuffle()
-    six.draw(6)
-    five := six.clone()
-    five.shuffle()
-    sixb := six.clone()
-    sixb.mill(1)
-    five.draw(5)
-    fiveb := five.clone()
-    fiveb.mill(1)
-    seven.pass_turn()
-    six.pass_turn()
-    sixb.pass_turn()
-    five.pass_turn()
-    fiveb.pass_turn()
-    return []state{seven, six, sixb, five, fiveb}
+    sixes := seven.clone_mulligan()
+    fives := sixes[0].clone_mulligan()
+    states := []state{seven, sixes[0], sixes[1], fives[0], fives[1]}
+    for _, s := range states { s.pass_turn() }
+    return states
 }

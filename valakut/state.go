@@ -19,13 +19,18 @@ type state struct {
     turn int
     Log string
     done bool
+    mulls int
 }
-
 
 func (s *state) id() string {
     // We don't care about order for hand, exile, or board. But we do
     // care for deck.
     return tally(s.hand) + ";" + tally(s.exile) + ";" + tally(s.board) + ";" + s.pool.show() + ";" + strconv.Itoa(s.lands) + ";" + strconv.FormatBool(s.done) + ";" + strings.Join(s.deck, " ")
+}
+
+func (s *state) Line() string {
+    play := strconv.FormatBool(s.play)[:1]
+    return "t:" + strconv.Itoa(s.turn) + " m:" + strconv.Itoa(s.mulls) + " p:" + play + "\n"
 }
 
 // ---------------------------------------------------------------------
@@ -44,6 +49,16 @@ func (s *state) next() []state {
 func (s *state) clone_pass_turn() []state {
     clone := s.clone()
     return clone.pass_turn()
+}
+
+func (s *state) clone_mulligan() []state {
+    ctop := s.clone()
+    ctop.mulls += 1
+    ctop.shuffle()
+    ctop.draw(7 - ctop.mulls)
+    cbot := ctop.clone()
+    cbot.mill(1)
+    return []state{ctop, cbot}
 }
 
 func (s *state) clone_play(card string) []state {
@@ -76,6 +91,8 @@ func (s *state) clone_play(card string) []state {
             return clone.play_shefet_monitor()
         case "Sheltered Thicket":
             return clone.play_sheltered_thicket()
+        case "Simian Spirit Guide":
+            return clone.play_simian_spirit_guide()
         case "Sleight of Hand":
             return clone.play_sleight_of_hand()
         case "Stomping Ground":
@@ -248,6 +265,11 @@ func (s *state) play_sheltered_thicket() []state {
         states = append(states, *s)
     }
     return states
+}
+
+func (s *state) play_simian_spirit_guide() []state {
+    s.pool.add("R")
+    return []state{*s}
 }
 
 func (s *state) play_sleight_of_hand() []state {

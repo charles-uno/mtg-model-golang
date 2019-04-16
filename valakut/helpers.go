@@ -10,11 +10,34 @@ import (
 
     "io/ioutil"
     "math/rand"
+    "os"
+    "path"
     "sort"
     "strings"
     "strconv"
     "time"
 )
+
+// ---------------------------------------------------------------------
+
+func InitRandom() {
+    rand.New(rand.NewSource(time.Now().Unix()))
+}
+
+
+// ---------------------------------------------------------------------
+
+func Append(filename string, text string) error {
+    filedir := path.Dir(filename)
+    if _, err := os.Stat(filedir); os.IsNotExist(err) {
+        os.Mkdir(filedir, 0755)
+    }
+    handle, err := os.OpenFile(filename, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+    if err != nil { return err }
+    defer handle.Close()
+    _, err = handle.WriteString(text)
+    return err
+}
 
 // ---------------------------------------------------------------------
 
@@ -50,8 +73,27 @@ func count(arr []string, r string) (n int) {
 // ---------------------------------------------------------------------
 
 func slug(text string) string {
+
+    switch text {
+        case "Primeval Titan":
+            return "Titan"
+        case "Sakura-Tribe Elder":
+            return "STE"
+        case "Simian Spirit Guide":
+            return "SSG"
+        case "Summoner's Pact":
+            return "Pact"
+        case "Through the Breach":
+            return "Breach"
+        case "Valakut, the Molten Pinnacle":
+            return "Valakut"
+        case "Wooded Foothills":
+            return "Fetch"
+    }
+
+    // By default, pull out spaces and punctuation.
     ret := text
-    for _, c := range []string{" ", "-", "'"} {
+    for _, c := range []string{" ", "-", "'", ","} {
         ret = strings.ReplaceAll(ret, c, "")
     }
     return ret
@@ -74,17 +116,15 @@ func remove(arr []string, elt string) []string {
 // ---------------------------------------------------------------------
 
 func shuffled(deck []string) []string {
-    r := rand.New(rand.NewSource(time.Now().Unix()))
     ret := make([]string, len(deck))
-    for i, j := range r.Perm(len(deck)) { ret[i] = deck[j] }
+    for i, j := range rand.Perm(len(deck)) { ret[i] = deck[j] }
     return ret
 }
 
 // ---------------------------------------------------------------------
 
 func flip() bool {
-    r := rand.New(rand.NewSource(time.Now().Unix()))
-    return r.Intn(2) == 0
+    return rand.Intn(2) == 0
 }
 
 // ---------------------------------------------------------------------
@@ -111,11 +151,6 @@ func uniques(arr []string) []string {
     for card, _ := range counts { uarr = append(uarr, card) }
     return uarr
 }
-
-
-
-
-
 
 // ---------------------------------------------------------------------
 
@@ -147,11 +182,6 @@ func land_output(card string) string {
             return ""
     }
 }
-
-
-
-
-
 
 // ---------------------------------------------------------------------
 
