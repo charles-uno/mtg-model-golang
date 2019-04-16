@@ -22,7 +22,7 @@ type state struct {
     mulls int
 }
 
-func (s *state) id() string {
+func (s *state) key() string {
     // We don't care about order for hand, exile, or board. But we do
     // care for deck.
     return tally(s.hand) + ";" + tally(s.exile) + ";" + tally(s.board) + ";" + s.pool.show() + ";" + strconv.Itoa(s.lands) + ";" + strconv.FormatBool(s.done) + ";" + strings.Join(s.deck, " ")

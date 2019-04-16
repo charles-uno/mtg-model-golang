@@ -17,13 +17,13 @@ func Simulate(name string) (state, error) {
 
 // ---------------------------------------------------------------------
 
-func play_turns(states []state) (state, error) {
+func play_turns(ss state_set) (state, error) {
     for turn := 1; turn < 7; turn++ {
-        states = next_turn(states)
+        ss = next_turn(ss)
         // Prefer states with fewer mulligans.
         done_state := state{}
         done_mulls := 3
-        for _, s := range states {
+        for _, s := range ss.states {
             if s.done && s.mulls < done_mulls {
                 done_mulls = s.mulls
                 done_state = s
@@ -36,41 +36,27 @@ func play_turns(states []state) (state, error) {
 
 // ---------------------------------------------------------------------
 
-func next_turn(states []state) []state {
+func next_turn(ss state_set) state_set {
     // Take some states at turn N. Return states at turn N+1.
-    states_old := states
-    states_new := []state{}
-    for len(states_old) > 0 {
-        for _, s := range states_old[0].next() {
-            if s.turn > states_old[0].turn || s.done {
-                states_new = append(states_new, s)
+    ss_old := ss
+    ss_new := set()
+    current_turn := ss.get().turn
+    for len(ss_old.states) > 0 {
+        s_old := ss_old.pop()
+        for _, s := range s_old.next() {
+            if s.turn > current_turn || s.done {
+                ss_new.add(s)
             } else {
-                states_old = append(states_old, s)
+                ss_old.add(s)
             }
         }
-        states_old = states_old[1:]
     }
-    return unique_states(states_new)
+    return ss_new
 }
 
 // ---------------------------------------------------------------------
 
-func unique_states(states []state) []state {
-    // Use map keys to get rid of duplicates. There are a lot of them.
-    tracker := make(map[string]state)
-    for _, s := range states {
-        tracker[s.id()] = s
-    }
-    new_states := []state{}
-    for _, s := range tracker {
-        new_states = append(new_states, s)
-    }
-    return new_states
-}
-
-// ---------------------------------------------------------------------
-
-func turn_zero(deck []string) []state {
+func turn_zero(deck []string) state_set {
     // Resolve all mulligans and return states ready to go.
     seven := state{deck: deck}
     seven.flip()
@@ -78,7 +64,7 @@ func turn_zero(deck []string) []state {
     seven.draw(7)
     sixes := seven.clone_mulligan()
     fives := sixes[0].clone_mulligan()
-    states := []state{seven, sixes[0], sixes[1], fives[0], fives[1]}
-    for _, s := range states { s.pass_turn() }
-    return states
+    ss := set(seven, sixes[0], sixes[1], fives[0], fives[1])
+    for _, s := range ss.states { s.pass_turn() }
+    return ss
 }

@@ -5,7 +5,7 @@ import (
     "fmt"
     "os"
     "strconv"
-    "valakut-go/valakut"
+    "valakut/valakut"
 )
 
 // ---------------------------------------------------------------------

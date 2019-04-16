@@ -24,7 +24,6 @@ func InitRandom() {
     rand.New(rand.NewSource(time.Now().Unix()))
 }
 
-
 // ---------------------------------------------------------------------
 
 func Append(filename string, text string) error {
