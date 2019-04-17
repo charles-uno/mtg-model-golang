@@ -24,11 +24,11 @@ func main() {
     for i := 0; i < ntrials; i++ {
         state, err := valakut.Simulate(name)
         if err == nil {
-            fmt.Print(string(state.Line()))
-            valakut.Append(filename, state.Line())
+            fmt.Println(state.Line())
+            valakut.AppendLine(filename, state.Line())
             if i == ntrials-1 { fmt.Println("\n" + state.Log) }
         } else {
-            valakut.Append(filename, "\n")
+            valakut.AppendLine(filename, "\n")
             fmt.Println(err)
         }
     }

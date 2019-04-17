@@ -4,14 +4,8 @@ package valakut
 // ---------------------------------------------------------------------
 
 import (
-    "errors"
-
     "fmt"
-
-    "io/ioutil"
     "math/rand"
-    "os"
-    "path"
     "sort"
     "strings"
     "strconv"
@@ -26,42 +20,6 @@ func InitRandom() {
 
 // ---------------------------------------------------------------------
 
-func Append(filename string, text string) error {
-    filedir := path.Dir(filename)
-    if _, err := os.Stat(filedir); os.IsNotExist(err) {
-        os.Mkdir(filedir, 0755)
-    }
-    handle, err := os.OpenFile(filename, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
-    if err != nil { return err }
-    defer handle.Close()
-    _, err = handle.WriteString(text)
-    return err
-}
-
-// ---------------------------------------------------------------------
-
-func load(name string) ([]string, error) {
-    // Accept the name of a deck. Return (list, err).
-    var list []string
-    dat, err := ioutil.ReadFile("lists/" + name + ".txt")
-    if err != nil {
-        return make([]string, 0), errors.New("List not found")
-    }
-    for _, line := range strings.Split(string(dat), "\n") {
-        if len(line) == 0 { continue }
-        if line[:1] == "#" { continue }
-        n_card := strings.SplitN(line, " ", 2)
-        n, err := strconv.Atoi(n_card[0])
-        if err != nil {
-            return make([]string, 0), errors.New("Invalid integer")
-        }
-        for i := 0; i<n; i++ { list = append(list, n_card[1]) }
-    }
-    return list, nil
-}
-
-// ---------------------------------------------------------------------
-
 func count(arr []string, r string) (n int) {
     for _, a := range arr {
         if a == r { n += 1 }
@@ -72,7 +30,6 @@ func count(arr []string, r string) (n int) {
 // ---------------------------------------------------------------------
 
 func slug(text string) string {
-
     switch text {
         case "Primeval Titan":
             return "Titan"
@@ -89,7 +46,6 @@ func slug(text string) string {
         case "Wooded Foothills":
             return "Fetch"
     }
-
     // By default, pull out spaces and punctuation.
     ret := text
     for _, c := range []string{" ", "-", "'", ","} {
@@ -143,7 +99,7 @@ func tally(arr []string) string {
 
 // ---------------------------------------------------------------------
 
-func uniques(arr []string) []string {
+func unique_strings(arr []string) []string {
     counts := make(map[string]int)
     for _, card := range arr { counts[card] += 1 }
     uarr := []string{}
@@ -153,8 +109,43 @@ func uniques(arr []string) []string {
 
 // ---------------------------------------------------------------------
 
+func get_cost(card string) string {
+    switch card {
+        case "Explore":
+            return "1G"
+        case "Primeval Titan":
+            return "4GG"
+        case "Sakura-Tribe Elder":
+            return "1G"
+        // Treat SFT as a 1-cost spell with kicker 2.
+        case "Search for Tomorrow":
+            return "G"
+        case "Shefet Monitor":
+            return "3G"
+        case "Sleight of Hand":
+            return "G"
+        case "Summoner's Pact":
+            return "4GG"
+        case "Through the Breach":
+            return "4R"
+        default:
+            return ""
+    }
+}
+
+// ---------------------------------------------------------------------
+
 func is_land(card string) bool {
-    lands := []string{"Forest", "Mountain", "Taiga", "Wooded Foothills", "Stomping Ground", "Cinder Glade", "Valakut, the Molten Pinnacle", "Sheltered Thicket"}
+    lands := []string{
+        "Forest",
+        "Mountain",
+        "Cinder Glade",
+        "Sheltered Thicket",
+        "Stomping Ground",
+        "Taiga",
+        "Valakut, the Molten Pinnacle",
+        "Wooded Foothills",
+    }
     for _, c := range lands {
         if c == card { return true }
     }

@@ -7,64 +7,68 @@ import (
 
 // ---------------------------------------------------------------------
 
-func Simulate(name string) (state, error) {
+func Simulate(name string) (game_state, error) {
     // Accept a deck list. Simulate a game and return the final state.
-    deck, err := load(name)
-    if err != nil { return state{}, err }
+    deck, err := LoadDeck(name)
+    if err != nil { return game_state{}, err }
     states := turn_zero(deck)
     return play_turns(states)
 }
 
 // ---------------------------------------------------------------------
 
-func play_turns(ss state_set) (state, error) {
+func play_turns(ugs unique_game_states) (game_state, error) {
+    var err error
     for turn := 1; turn < 7; turn++ {
-        ss = next_turn(ss)
+        ugs, err = next_turn(ugs)
+        if err != nil { return game_state{}, err }
         // Prefer states with fewer mulligans.
-        done_state := state{}
+        done_state := game_state{}
         done_mulls := 3
-        for _, s := range ss.states {
-            if s.done && s.mulls < done_mulls {
-                done_mulls = s.mulls
-                done_state = s
+        for _, gs := range ugs.iter() {
+            if gs.done && gs.mulls < done_mulls {
+                done_mulls = gs.mulls
+                done_state = gs
             }
         }
         if done_state.turn > 0 { return done_state, nil }
     }
-    return state{}, errors.New("Failed to finish")
+    return game_state{}, errors.New("Failed to finish")
 }
 
 // ---------------------------------------------------------------------
 
-func next_turn(ss state_set) state_set {
+func next_turn(ugs unique_game_states) (unique_game_states, error) {
     // Take some states at turn N. Return states at turn N+1.
-    ss_old := ss
-    ss_new := set()
-    current_turn := ss.get().turn
-    for len(ss_old.states) > 0 {
-        s_old := ss_old.pop()
-        for _, s := range s_old.next() {
-            if s.turn > current_turn || s.done {
-                ss_new.add(s)
+    ugs_old := ugs
+    ugs_new := UniqueGameStates()
+    gs, err := ugs_old.get()
+    if err != nil { return UniqueGameStates(), err }
+    current_turn := gs.turn
+    for ugs_old.size() > 0 {
+        gs_old, err := ugs_old.pop()
+        if err != nil { return UniqueGameStates(), err }
+        for _, gs := range gs_old.next() {
+            if gs.turn > current_turn || gs.done {
+                ugs_new.add(gs)
             } else {
-                ss_old.add(s)
+                ugs_old.add(gs)
             }
         }
     }
-    return ss_new
+    return ugs_new, nil
 }
 
 // ---------------------------------------------------------------------
 
-func turn_zero(deck []string) state_set {
+func turn_zero(deck []string) unique_game_states {
     // Resolve all mulligans and return states ready to go.
-    seven := state{deck: deck}
-    seven.flip()
-    seven.shuffle()
-    seven.draw(7)
+    seven := GameState(deck)
     sixes := seven.clone_mulligan()
     fives := sixes[0].clone_mulligan()
-    ss := set(seven, sixes[0], sixes[1], fives[0], fives[1])
-    for _, s := range ss.states { s.pass_turn() }
-    return ss
+    ugs := UniqueGameStates(seven)
+    ugs.add(sixes...)
+    ugs.add(fives...)
+    for _, gs := range ugs.iter() { gs.pass_turn() }
+    return ugs
 }
