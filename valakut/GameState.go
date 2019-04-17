@@ -63,12 +63,12 @@ func (gs *game_state) key() string {
 func (gs *game_state) Line() string {
     return strings.Join(
         []string{
-            "t:" + strconv.Itoa(gs.turn),
-            "m:" + strconv.Itoa(gs.mulls),
-            "p:" + strconv.FormatBool(gs.play)[:1],
-            "f:" + strconv.FormatBool(gs.fast)[:1],
+            strconv.Itoa(gs.turn),
+            b2i2a(gs.play),
+            strconv.Itoa(gs.mulls),
+            b2i2a(gs.fast),
         },
-        " ",
+        ",",
     )
 }
 

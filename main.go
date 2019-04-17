@@ -19,18 +19,23 @@ func main() {
     ntrials := 1
     if len(os.Args) > 1 { ntrials, _ = strconv.Atoi(os.Args[1]) }
 
-    filename := "data/" + name + ".out"
-
     for i := 0; i < ntrials; i++ {
         state, err := valakut.Simulate(name)
+        // It'll be all zeros if we failed to converge.
+        valakut.SaveResult(name, state.Line())
+
         if err == nil {
             fmt.Println(state.Line())
-            valakut.AppendLine(filename, state.Line())
             if i == ntrials-1 { fmt.Println("\n" + state.Log) }
         } else {
-            valakut.AppendLine(filename, "\n")
             fmt.Println(err)
         }
     }
+
+    fmt.Println("")
+
+    valakut.PrintSummary(name)
+
+
 
 }

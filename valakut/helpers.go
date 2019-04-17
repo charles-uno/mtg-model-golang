@@ -20,6 +20,21 @@ func InitRandom() {
 
 // ---------------------------------------------------------------------
 
+func contains(arr []string, elt string) bool {
+    for _, a := range arr {
+        if a == elt { return true }
+    }
+    return false
+}
+
+
+
+func b2i2a(b bool) string {
+    if b { return "1" } else { return "0" }
+}
+
+
+
 func count(arr []string, r string) (n int) {
     for _, a := range arr {
         if a == r { n += 1 }
@@ -37,6 +52,8 @@ func slug(text string) string {
             return "STE"
         case "Simian Spirit Guide":
             return "SSG"
+        case "Stomping Ground":
+            return "Shock"
         case "Summoner's Pact":
             return "Pact"
         case "Through the Breach":
