@@ -26,7 +26,7 @@ func play_turns(ugs unique_game_states) (game_state, error) {
         done_state := game_state{}
         done_mulls := 3
         for _, gs := range ugs.iter() {
-            if gs.done && gs.mulls < done_mulls {
+            if gs.done && (gs.mulls < done_mulls || gs.fast) {
                 done_mulls = gs.mulls
                 done_state = gs
             }

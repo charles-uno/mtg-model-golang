@@ -15,7 +15,7 @@ import (
 // ---------------------------------------------------------------------
 
 func InitRandom() {
-    rand.New(rand.NewSource(time.Now().Unix()))
+    rand.Seed(time.Now().UTC().UnixNano())
 }
 
 // ---------------------------------------------------------------------
@@ -128,6 +128,12 @@ func unique_strings(arr []string) []string {
 
 func get_cost(card string) string {
     switch card {
+        case "Arboreal Grazer":
+            return "G"
+        case "Deadshot Minotaur":
+            return "R"
+        case "Desperate Ritual":
+            return "1R"
         case "Explore":
             return "1G"
         case "Primeval Titan":

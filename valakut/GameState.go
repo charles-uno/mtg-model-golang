@@ -102,8 +102,14 @@ func (gs *game_state) clone_play(card string) []game_state {
     // Careful -- we may accidentally over-play from Sheltered Thicket.
     if is_land(card) { clone.lands -= 1 } else { clone.pool.pay(cost) }
     switch card {
+        case "Arboreal Grazer":
+            return clone.play_arboreal_grazer()
         case "Cinder Glade":
             return clone.play_cinder_glade()
+        case "Deadshot Minotaur":
+            return clone.play_deadshot_minotaur()
+        case "Desperate Ritual":
+            return clone.play_desperate_ritual()
         case "Explore":
             return clone.play_explore()
         case "Forest":
@@ -181,6 +187,22 @@ func (gs *game_state) play_suspended(card string) {
 
 // ---------------------------------------------------------------------
 
+func (gs *game_state) play_arboreal_grazer() []game_state {
+    // We put the land in tapped...
+    states := []game_state{}
+    for _, card := range gs.hand {
+        if is_land(card) {
+            clone := gs.clone()
+            clone.hand = remove(clone.hand, card)
+            clone.board = append(clone.board, card)
+            clone.unnote()
+            clone.note(slug("Arboreal Grazer") + ", " + slug(card))
+            states = append(states, clone)
+        }
+    }
+    return states
+}
+
 func (gs *game_state) play_cinder_glade() []game_state {
     gs.board = append(gs.board, "Taiga")
     nbasics := 0
@@ -189,11 +211,23 @@ func (gs *game_state) play_cinder_glade() []game_state {
     }
     gs.unnote()
     if nbasics > 1 {
-        gs.note("Playing " + slug("Cinder Glade") + " untapped")
+        gs.note(slug("Cinder Glade") + " (untapped)")
         gs.pool.add("G")
     } else {
-        gs.note("Playing " + slug("Cinder Glade") + " tapped")
+        gs.note(slug("Cinder Glade") + " (tapped)")
     }
+    return []game_state{*gs}
+}
+
+func (gs *game_state) play_deadshot_minotaur() []game_state {
+    gs.unnote()
+    gs.note("Cycling " + slug("Deadshot Minotaur") + ", drawing " + slug(gs.deck[0]))
+    gs.draw(1)
+    return []game_state{*gs}
+}
+
+func (gs *game_state) play_desperate_ritual() []game_state {
+    gs.pool.add("RRR")
     return []game_state{*gs}
 }
 
