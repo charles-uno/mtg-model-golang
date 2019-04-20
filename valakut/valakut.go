@@ -65,10 +65,10 @@ func turn_zero(deck []string) unique_game_states {
     // Resolve all mulligans and return states ready to go.
     seven := GameState(deck)
     sixes := seven.clone_mulligan()
-    fives := sixes[0].clone_mulligan()
+//    fives := sixes[0].clone_mulligan()
     ugs := UniqueGameStates(seven)
     ugs.add(sixes...)
-    ugs.add(fives...)
+//    ugs.add(fives...)
     for _, gs := range ugs.iter() { gs.pass_turn() }
     return ugs
 }

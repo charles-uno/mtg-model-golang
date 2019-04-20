@@ -14,18 +14,13 @@ import (
     "strings"
 )
 
+var turns = [...]float64{3.0, 3.5, 4.0, 4.5, 5.0, 5.5}
+
 // ---------------------------------------------------------------------
-
-
-
 
 func SaveResult(name string, line string) error {
     return AppendLine("data/" + name + ".out", line)
 }
-
-
-
-
 
 func AppendLine(filename string, line string) error {
     filedir := path.Dir(filename)
@@ -83,43 +78,72 @@ func ReadLines(filename string) ([]string, error) {
 
 // ---------------------------------------------------------------------
 
-func PrintSummary(name string) error {
+func PrintSummaries() {
+    dirname := "data"
+    f, err := os.Open(dirname)
+    if err != nil { fmt.Println(err); return }
+    files, err := f.Readdir(-1)
+    f.Close()
+    if err != nil { fmt.Println(err); return }
+
+    names := []string{}
+    namelen := 0
+    for _, file := range files {
+        name := strings.Split(file.Name(), ".")[0]
+        names = append(names, name)
+        if len(name) > namelen { namelen = len(name) }
+    }
+
+    sort.Strings(names)
+
+    format := "%-" + strconv.Itoa(namelen+1) + "s"
+
+    fmt.Printf(format, "")
+    fmt.Println(get_summary_header())
+    for _, name := range names {
+        summary, _ := get_summary(name)
+        line := get_summary_line(summary)
+        fmt.Printf(format, name)
+        fmt.Println(line)
+    }
+}
+
+
+
+
+
+func get_summary(name string) (map[float64]int, error) {
+    summary := make(map[float64]int)
     arr, err := ReadCSV("data/" + name + ".out")
-    if err != nil { return err }
-
-    ntrials := len(arr)
-
-    turn_tally := make(map[float64]int)
+    if err != nil { return summary, err }
     for _, fields := range arr {
         turn, _ := strconv.Atoi(fields[0])
         fast, _ := strconv.Atoi(fields[3])
         adjusted_turn := float64(turn) + 0.5 - 0.5*float64(fast)
-        turn_tally[adjusted_turn]++
+        summary[adjusted_turn] += 1
     }
+    return summary, nil
+}
 
-    var turns []float64
-    for t, _ := range turn_tally {
-        turns = append(turns, t)
-    }
-    sort.Float64s(turns)
-
+func get_summary_header() string {
     header := ""
+    for _, turn := range turns {
+        header += fmt.Sprintf("          T%4.1f", turn)
+    }
+    return header
+}
+
+func get_summary_line(summary map[float64]int) string {
+    ntot := 0
+    for _, n := range summary { ntot += n }
+    ncum := 0
     line := ""
-    n := 0
-    for _, t := range turns {
-        if t < 1 { continue }
-        header += fmt.Sprintf("         T%5.1f", t)
-        n += turn_tally[t]
-        dn := math.Sqrt(float64(n))
-
-        p := float64(100*n)/float64(ntrials)
-        dp := 100.*dn/float64(ntrials)
-
+    for _, turn := range turns {
+        ncum += summary[turn]
+        dn := math.Sqrt(float64(ncum))
+        p := float64(100*ncum)/float64(ntot)
+        dp := 100.*dn/float64(ntot)
         line += "     " + fmt.Sprintf("%3.0f", p) + "%" + " ± " + fmt.Sprintf("%2.0f", dp) + "%"
     }
-    fmt.Println(header)
-    fmt.Println(line)
-
-    return nil
-
+    return line
 }

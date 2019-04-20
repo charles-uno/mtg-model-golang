@@ -25,6 +25,9 @@ type game_state struct {
 
 func GameState(deck []string) game_state {
     gs := game_state{deck: deck}
+    nc := len(deck)
+    nl := nlands(deck)
+    gs.note("Deck has " + strconv.Itoa(nc) + " cards, " + strconv.Itoa(nl) + " lands")
     gs.flip()
     gs.shuffle()
     gs.draw(7)
@@ -112,14 +115,22 @@ func (gs *game_state) clone_play(card string) []game_state {
             return clone.play_desperate_ritual()
         case "Explore":
             return clone.play_explore()
+        case "Farseek":
+            return clone.play_farseek()
         case "Forest":
             return clone.play_forest()
         case "Mountain":
             return clone.play_mountain()
+        case "Oath of Nissa":
+            return clone.play_oath_of_nissa()
         case "Primeval Titan":
             return clone.play_primeval_titan()
+        case "Prismatic Omen":
+            return clone.play_prismatic_omen()
         case "Sakura-Tribe Elder":
             return clone.play_sakura_tribe_elder()
+        case "Scapeshift":
+            return clone.play_scapeshift()
         case "Search for Tomorrow":
             return clone.play_search_for_tomorrow()
         case "Shefet Monitor":
@@ -134,6 +145,8 @@ func (gs *game_state) clone_play(card string) []game_state {
             return clone.play_stomping_ground()
         case "Summoner's Pact":
             return clone.play_summoners_pact()
+        case "Tapped Taiga":
+            return clone.play_tapped_taiga()
         case "Through the Breach":
             return clone.play_through_the_breach()
         case "Valakut, the Molten Pinnacle":
@@ -239,6 +252,11 @@ func (gs *game_state) play_explore() []game_state {
     return []game_state{*gs}
 }
 
+func (gs *game_state) play_farseek() []game_state {
+    gs.board = append(gs.board, "Forest")
+    return []game_state{*gs}
+}
+
 func (gs *game_state) play_forest() []game_state {
     gs.board = append(gs.board, "Forest")
     gs.pool.add("G")
@@ -251,13 +269,45 @@ func (gs *game_state) play_mountain() []game_state {
     return []game_state{*gs}
 }
 
+func (gs *game_state) play_oath_of_nissa() []game_state {
+    states := []game_state{}
+    choices := gs.deck[:3]
+    // Don't worry about the order of cards on the bottom
+    gs.deck = gs.deck[3:]
+    for _, card := range choices {
+        if is_land(card) || is_creature(card) {
+            clone := gs.clone()
+            clone.unnote()
+            clone.note(slug("Oath of Nissa") + ", choosing " + slug(card) + " from " + tally(choices))
+            clone.hand = append(clone.hand, card)
+            states = append(states, clone)
+        }
+    }
+    return states
+}
+
 func (gs *game_state) play_primeval_titan() []game_state {
     gs.done = true
     return []game_state{*gs}
 }
 
+func (gs *game_state) play_prismatic_omen() []game_state {
+    gs.board = append(gs.board, "Prismatic Omen")
+    return []game_state{*gs}
+}
+
 func (gs *game_state) play_sakura_tribe_elder() []game_state {
     gs.board = append(gs.board, "Forest")
+    return []game_state{*gs}
+}
+
+func (gs *game_state) play_scapeshift() []game_state {
+    // Need 7 lands or 6 lands and an Omen
+    n := nlands(gs.board)
+    can_cast := (n >= 7) || (contains(gs.board, "Prismatic Omen") && n >= 6)
+    if !can_cast { return []game_state{} }
+    gs.done = true
+    gs.fast = true
     return []game_state{*gs}
 }
 
@@ -334,6 +384,11 @@ func (gs *game_state) play_summoners_pact() []game_state {
     return gs.play_primeval_titan()
 }
 
+func (gs *game_state) play_tapped_taiga() []game_state {
+    gs.board = append(gs.board, "Taiga")
+    return []game_state{*gs}
+}
+
 func (gs *game_state) play_through_the_breach() []game_state {
     if !gs.in_hand("Primeval Titan") && !gs.in_hand("Summoner's Pact") {
         return []game_state{}
@@ -391,7 +446,7 @@ func (gs *game_state) draw(n int) {
 
 func (gs *game_state) mill(n int) {
     gs.note("Milling " + tally(gs.deck[:n]))
-    gs.deck = append(gs.deck[n:], gs.deck[:n]...)
+    gs.deck = gs.deck[n:]
 }
 
 func (gs *game_state) in_hand(card string) bool {

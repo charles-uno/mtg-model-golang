@@ -1,5 +1,5 @@
-4 Simian Spirit Guide
 4 Through the Breach
+4 Simian Spirit Guide
 
 4 Primeval Titan
 4 Summoner's Pact
@@ -8,11 +8,12 @@
 4 Search for Tomorrow
 4 Explore
 
-4 Desperate Ritual
+6 ?
 
 4 Valakut, the Molten Pinnacle
 4 Stomping Ground
-8 Wooded Foothills
+4 Wooded Foothills
 2 Forest
-4 Cinder Glade
-6 Mountain
+# Windswept Heath
+4 Wooded Foothills
+8 Mountain

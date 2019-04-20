@@ -1,5 +1,5 @@
-4 Simian Spirit Guide
 4 Through the Breach
+4 Shefet Monitor
 
 4 Primeval Titan
 4 Summoner's Pact
@@ -12,7 +12,7 @@
 
 4 Valakut, the Molten Pinnacle
 4 Stomping Ground
-7 Wooded Foothills
+4 Wooded Foothills
 2 Forest
-1 Cinder Glade
+4 Sheltered Thicket
 8 Mountain
