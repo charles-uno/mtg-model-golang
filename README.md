@@ -1,11 +1,59 @@
 
 # Valakut Model
 
-A model in Go adapted from the Python model described [here](http://charles.uno/titan-breach-simulation/). Games are played exhaustively, independently tracking all possible sequences of legal plays. For a given deck list, we're able to determine an upper bound for how often it can "go off" with Through the Breach, Primeval Titan, or Scapeshift.
+A model in Go adapted from the Python model described [here](http://charles.uno/titan-breach-simulation/). For a given deck list, we're able to determine an upper bound for how often it can "go off" with Through the Breach, Primeval Titan, or Scapeshift.
+
+It's an "upper bound," not exactly an estimate, because the model cheats a little bit. It shuffles up, draws an opening hand, then attempts all possible legal plays and keeps the best result. For example, the model might play Explore, not like what it draws, then go back and play Sakura-Tribe Elder instead.
+
+The effect is small, in general. There aren't that many choices to be made when playing a Valakut deck, so the play patterns that emerge look like what a human would do. But it's important to keep the distinction in mind especially when considering effects that draw cards, like Explore or Sheltered Thicket.
+
+## Usage
+
+If you're a barbarian like me, who sorta thinks of Go as a scripted language, use:
+
+```
+go run main.go N DECKNAME
+```
+
+It'll then load up the deck listed in `lists/DECKNAME.txt` and run `N` games with it. The outcome of each game is saved in `data/DECKNAME.out`. The last run is also printed out verbosely, for example:
+
+```
+Deck has 60 cards, 26 lands
+On the draw
+Shuffling
+
+[T1] Hand: ? Explore Forest SearchforTomorrow ShefetMonitor Shock Valakut, drawing Mountain
+Forest
+Suspending SearchforTomorrow
+
+[T2] Hand: ? Explore Mountain ShefetMonitor Shock Valakut, drawing ShelteredThicket
+[T2] Board: Forest
+[T2] Exile: ..SearchforTomorrow, ticking down
+Mountain
+Explore, drawing Shock
+
+[T3] Hand: ? ShefetMonitor ShelteredThicket Shock*2 Valakut, drawing Pact
+[T3] Board: Forest Mountain
+[T3] Exile: .SearchforTomorrow, ticking down
+SearchforTomorrow from exile
+Shock
+Cycling ShefetMonitor, drawing Breach
+
+[T4] Hand: ? Breach Pact ShelteredThicket Shock Valakut, drawing Fetch
+[T4] Board: Forest*3 Mountain Taiga
+Valakut
+Breach
+```
+
+The program can also be invoked "naked," leaving off all arguments, to see a summary of all existing data:
+
+```
+go run main.go
+```
 
 ## Shuffling
 
-Suppose we have an Explore in hand and a fetch land in play. Normally, we would have to choose whether to fetch before or after drawing. But the model tries both ways and keeps the better outcome -- essentially double dipping on luck.
+Shuffling is a problem, so the model doesn't do it. Playing all possible lines exhaustively means the computer will always find the optimal sequence of plays. But shuffling to blind-draw the optimal card isn't luck or skill -- it's cheating.
 
 The order of the deck does not change over the course of the game. If we would pull a card out of our deck, we instead create a new one out of thin air. This means we neglect the effects of deck thinning. Our estimate is that this is a percent-level effect.
 
@@ -21,22 +69,15 @@ A `game_state` object keeps track of about what you would expect: cards in hand,
 
 At each point, we identify all legal plays, then copy the game state that many times. If you have two lands in play and an Explore in hand, one copy plays it. If you have a Sakura-Tribe Elder in hand too, a copy tries that as well. Another copy passes the turn without playing anything.
 
-
-
-
+Each turn, we clone and iterate each game state until all possible states reach the next turn. If any have found a line to put Primeval Titan on the table, we're done. Otherwise, we play out another turn.
 
 ## Unique Game States
 
-
-
+A typical game includes thousands of bifurcated game states, many of which involve playing the same cards in a different order. To keep computation time under control, we purge these duplicates. Essentially, each game state packs all its information into a key string, and we eliminate states with duplicate keys.
 
 ## Tracking Results
 
 
-
-
-
-Let's see if we can implement the Valakut model in Go instead of Python
 
 
 Data files are CSV with fields:
