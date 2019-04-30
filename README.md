@@ -9,7 +9,7 @@ The effect is small, in general. There aren't that many choices to be made when 
 
 ## Usage
 
-If you're a barbarian like me, who sorta thinks of Go as a scripted language, use:
+To run, use:
 
 ```
 go run main.go N DECKNAME
@@ -51,6 +51,10 @@ The program can also be invoked "naked," leaving off all arguments, to see a sum
 go run main.go
 ```
 
+## Mulligans
+
+The computer is too good at mulligans. It basically looks at its seven, six, and five in parallel and keeps whichever it likes best. This leads to some non-human play patterns. The logic is in there for Vancouver mulligans, but it's currently turned off.
+
 ## Shuffling
 
 Shuffling is a problem, so the model doesn't do it. Playing all possible lines exhaustively means the computer will always find the optimal sequence of plays. But shuffling to blind-draw the optimal card isn't luck or skill -- it's cheating.
@@ -77,12 +81,11 @@ A typical game includes thousands of bifurcated game states, many of which invol
 
 ## Tracking Results
 
-
-
-
-Data files are CSV with fields:
+Data files under `data/` are CSV with fields:
 
 - Turn: what turn did you go off?
 - Play: 1 for play, 0 for draw
 - Mulls: how many mulligans?
 - Fast: 1 for Breach/Shift, 0 for hard-casting Titan
+
+After each game completes, a line is added to the file for that deck name. Running with no arguments causes that data to be loaded and summarized. 

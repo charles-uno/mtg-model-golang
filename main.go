@@ -20,6 +20,11 @@ func main() {
         ntrials, _ = strconv.Atoi(os.Args[1])
     }
 
+    if ntrials == 0 {
+        valakut.PrintSummaries()
+        return
+    }
+
     names := []string{}
     if len(os.Args) > 2 {
         names = os.Args[2:]
@@ -51,9 +56,6 @@ func main() {
             fmt.Println(err)
         }
     }
-
-    fmt.Println("")
-    valakut.PrintSummaries()
 }
 
 // ---------------------------------------------------------------------
