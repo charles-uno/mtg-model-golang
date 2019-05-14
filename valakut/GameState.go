@@ -116,11 +116,13 @@ func (gs *game_state) clone_play(card string) []game_state {
         case "Explore":
             return clone.play_explore()
         case "Farseek":
-            return clone.play_farseek()
+            return clone.play_sakura_tribe_elder()
         case "Forest":
             return clone.play_forest()
         case "Mountain":
             return clone.play_mountain()
+        case "Mwonvuli Acid-Moss":
+            return clone.play_sakura_tribe_elder()
         case "Oath of Nissa":
             return clone.play_oath_of_nissa()
         case "Primeval Titan":
@@ -137,6 +139,8 @@ func (gs *game_state) clone_play(card string) []game_state {
             return clone.play_shefet_monitor()
         case "Sheltered Thicket":
             return clone.play_sheltered_thicket()
+        case "Shivan Oasis":
+            return clone.play_shivan_oasis()
         case "Simian Spirit Guide":
             return clone.play_simian_spirit_guide()
         case "Sleight of Hand":
@@ -145,14 +149,16 @@ func (gs *game_state) clone_play(card string) []game_state {
             return clone.play_stomping_ground()
         case "Summoner's Pact":
             return clone.play_summoners_pact()
-        case "Tapped Taiga":
-            return clone.play_tapped_taiga()
         case "Through the Breach":
             return clone.play_through_the_breach()
         case "Valakut, the Molten Pinnacle":
             return clone.play_valakut_the_molten_pinnacle()
+        case "Wood Elves":
+            return clone.play_wood_elves()
         case "Wooded Foothills":
-            return clone.play_wooded_foothills()
+            return clone.play_forest()
+        case "Woodfall Primus":
+            return clone.play_woodfall_primus()
     }
     return []game_state{}
 }
@@ -249,11 +255,6 @@ func (gs *game_state) play_explore() []game_state {
     gs.unnote()
     gs.note(slug("Explore") + ", drawing " + slug(gs.deck[0]))
     gs.draw(1)
-    return []game_state{*gs}
-}
-
-func (gs *game_state) play_farseek() []game_state {
-    gs.board = append(gs.board, "Forest")
     return []game_state{*gs}
 }
 
@@ -356,6 +357,11 @@ func (gs *game_state) play_sheltered_thicket() []game_state {
     return states
 }
 
+func (gs *game_state) play_shivan_oasis() []game_state {
+    gs.board = append(gs.board, "Taiga")
+    return []game_state{*gs}
+}
+
 func (gs *game_state) play_simian_spirit_guide() []game_state {
     gs.pool.add("R")
     return []game_state{*gs}
@@ -384,13 +390,8 @@ func (gs *game_state) play_summoners_pact() []game_state {
     return gs.play_primeval_titan()
 }
 
-func (gs *game_state) play_tapped_taiga() []game_state {
-    gs.board = append(gs.board, "Taiga")
-    return []game_state{*gs}
-}
-
 func (gs *game_state) play_through_the_breach() []game_state {
-    if !gs.in_hand("Primeval Titan") && !gs.in_hand("Summoner's Pact") {
+    if !gs.in_hand("Primeval Titan", "Summoner's Pact", "Woodfall Primus") {
         return []game_state{}
     }
     gs.done = true
@@ -403,7 +404,12 @@ func (gs *game_state) play_valakut_the_molten_pinnacle() []game_state {
     return []game_state{*gs}
 }
 
-func (gs *game_state) play_wooded_foothills() []game_state {
+func (gs *game_state) play_woodfall_primus() []game_state {
+    gs.done = true
+    return []game_state{*gs}
+}
+
+func (gs *game_state) play_wood_elves() []game_state {
     gs.board = append(gs.board, "Forest")
     gs.pool.add("G")
     return []game_state{*gs}
@@ -449,9 +455,11 @@ func (gs *game_state) mill(n int) {
     gs.deck = gs.deck[n:]
 }
 
-func (gs *game_state) in_hand(card string) bool {
-    for _, c := range gs.hand {
-        if c == card { return true }
+func (gs *game_state) in_hand(cards ...string) bool {
+    for _, c := range cards {
+        for _, d := range gs.hand {
+            if c == d { return true }
+        }
     }
     return false
 }

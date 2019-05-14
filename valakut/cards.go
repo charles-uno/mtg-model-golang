@@ -73,6 +73,8 @@ func get_cost(card string) string {
             return "1G"
         case "Oath of Nissa":
             return "G"
+        case "Mwonvuli Acid-Moss":
+            return "2GG"
         case "Primeval Titan":
             return "4GG"
         case "Prismatic Omen":
@@ -92,6 +94,10 @@ func get_cost(card string) string {
             return "4GG"
         case "Through the Breach":
             return "4R"
+        case "Wood Elves":
+            return "2G"
+        case "Woodfall Primus":
+            return "5GGG"
         default:
             return ""
     }
@@ -115,6 +121,7 @@ func is_land(card string) bool {
         "Mountain",
         "Cinder Glade",
         "Sheltered Thicket",
+        "Shivan Oasis",
         "Stomping Ground",
         "Taiga",
         "Tapped Taiga",
@@ -135,6 +142,8 @@ func is_creature(card string) bool {
         "Simian Spirit Guide",
         "Sakura-Tribe Elder",
         "Shefet Monitor",
+        "Wood Elves",
+        "Woodfall Primus",
     }
     for _, c := range lands {
         if c == card { return true }
@@ -151,6 +160,8 @@ func land_output(card string) string {
         case "Mountain":
             return "R"
         case "Sheltered Thicket":
+            return "G"
+        case "Shivan Oasis":
             return "G"
         case "Stomping Ground":
             return "G"
