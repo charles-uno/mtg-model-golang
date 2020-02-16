@@ -10,9 +10,9 @@ import (
 )
 
 
-type card struct {
+type card_obj struct {
     colors []string
-    cost mana
+    cost mana_obj
     display string
     name string
     types []string
@@ -20,10 +20,10 @@ type card struct {
 
 
 // Keep card metadata cached so we don't have to keep looking it up
-var card_metadata = make(map[string]card)
+var card_metadata = make(map[string]card_obj)
 
 
-func Card(name string) card {
+func Card(name string) card_obj {
     _, ok := card_metadata[name]
     if ! ok {
         fmt.Println("creating new card:", name)
@@ -41,7 +41,7 @@ func Card(name string) card {
         cost_raw, err := carddata.Get(name).Get("cost").String()
         if err != nil { cost_raw = "" }
         // Stick this all into a card object
-        card_metadata[name] = card{
+        card_metadata[name] = card_obj{
             colors: strings.Split(colors_raw, ","),
             cost: Mana(cost_raw),
             display: display,
@@ -53,7 +53,7 @@ func Card(name string) card {
 }
 
 
-func (c *card) Pretty() string {
+func (c *card_obj) Pretty() string {
     return c.display
 }
 

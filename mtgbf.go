@@ -7,24 +7,17 @@ import (
 
 
 func main() {
-    fmt.Println("hello")
 
-    m := mtgbf.Mana("GW2URR")
+//    m := mtgbf.Mana("GW2URR")
+//    fmt.Println(m.Pretty())
 
-    fmt.Println(m)
+//    c := mtgbf.Card("Forest")
+//    fmt.Println(c)
 
-    fmt.Println(m.Pretty())
+    state := mtgbf.InitialGameState("debug")
 
-    c := mtgbf.Card("Forest")
-    fmt.Println(c)
+    fmt.Println(state.Pretty())
 
-    c = mtgbf.Card("Ancient Stirrings")
-    c = mtgbf.Card("Ancient Stirrings")
-    c = mtgbf.Card("Ancient Stirrings")
-    fmt.Println(c.Pretty())
-
-
-    cards := mtgbf.Cards("Explore", "Opt", "Explore")
-    fmt.Println(cards.Pretty())
-
+//    cards := mtgbf.Cards("Explore", "Opt", "Explore")
+//    fmt.Println(cards.Pretty())
 }

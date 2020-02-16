@@ -6,14 +6,14 @@ import (
 )
 
 
-type mana struct {
+type mana_obj struct {
     wubrg [5]int
     total int
 }
 
 
-func Mana(ms string) mana {
-    m := mana{}
+func Mana(ms string) mana_obj {
+    m := mana_obj{}
     // Figure out colored mana
     for i, r := range "WUBRG" {
         m.wubrg[i] += count_runes(ms, r)
@@ -39,7 +39,7 @@ func count_runes(s string, r rune) int {
 }
 
 
-func (m *mana) Pretty() string {
+func (m *mana_obj) Pretty() string {
     ms := ""
     mana_color := 0
     for i, r := range "WUBRG" {
