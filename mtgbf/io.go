@@ -3,26 +3,39 @@ package mtgbf
 
 import (
     "io/ioutil"
+    "math/rand"
     "strconv"
     "strings"
+    "time"
 )
 
 
-func LoadList(name string) (card_seq, error) {
-    lines, err := ReadLines("lists/" + name + ".txt")
-    if err != nil { return card_seq{}, err }
-    card_names := []string{}
+func load_list(name string) ([]string, error) {
+    lines, err := read_lines("lists/" + name + ".txt")
+    cards := []string{}
+    if err != nil { return cards, err }
     for _, line := range lines {
         n_card := strings.SplitN(line, " ", 2)
         n, err := strconv.Atoi(n_card[0])
-        if err != nil { return card_seq{}, err }
-        for i := 0; i<n; i++ { card_names = append(card_names, n_card[1]) }
+        if err != nil { return []string{}, err }
+        for i := 0; i<n; i++ { cards = append(cards, n_card[1]) }
     }
-    return Cards(card_names...), nil
+    return shuffled(cards), nil
 }
 
 
-func ReadLines(filename string) ([]string, error) {
+func shuffled(arr_old []string) []string {
+    // This shouldn't happen very often. Should be fine to re-seed every time
+    rand.Seed(time.Now().UTC().UnixNano())
+    arr_new := make([]string, len(arr_old))
+    for i, j := range rand.Perm(len(arr_old)) {
+        arr_new[i] = arr_old[j]
+    }
+    return arr_new
+}
+
+
+func read_lines(filename string) ([]string, error) {
     // Load a file and return it as a sequence of strings. Skip empty
     // lines and comments.
     lines := []string{}

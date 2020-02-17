@@ -2,10 +2,34 @@ package mtgbf
 
 
 import (
+    "errors"
     "sort"
     "strconv"
     "strings"
 )
+
+
+func contains(arr []string, elt string) bool {
+    for _, a := range arr {
+        if a == elt { return true }
+    }
+    return false
+}
+
+
+func discard(arr_old []string, elt string) []string {
+    if ! contains(arr_old, elt) {
+        panic(errors.New(elt + " not in " + tally_strings(arr_old)))
+    }
+    arr_new := arr_old[:len(arr_old) - 1]
+    for i, a := range arr_new {
+        if a == elt {
+            arr_new[i] = arr_old[len(arr_old) - 1]
+            break
+        }
+    }
+    return arr_new
+}
 
 
 func tally_strings(arr []string) string {
@@ -32,6 +56,15 @@ func unique_strings(arr []string) []string {
         us = append(us, a)
     }
     return us
+}
+
+
+func count_strings(arr []string, elt string) int {
+    n := 0
+    for _, a := range arr {
+        if a == elt { n += 1 }
+    }
+    return n
 }
 
 
