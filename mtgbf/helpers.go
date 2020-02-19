@@ -68,6 +68,15 @@ func count_strings(arr []string, elt string) int {
 }
 
 
+func count_runes(s string, r rune) int {
+    count := 0
+    for _, char := range s {
+        if char == r { count += 1 }
+    }
+    return count
+}
+
+
 func unique_counts(arr []string) map[string]int {
     uc := make(map[string]int)
     for _, a := range arr { uc[a] += 1 }

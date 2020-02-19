@@ -18,13 +18,11 @@ type game_state struct {
 
 
 func InitialGameState(deck_name string) game_state {
-    library, err := load_list(deck_name)
-    if err != nil { panic(err) }
     gs := game_state{
         battlefield: []string{},
         hand: []string{},
         land_drops: 0,
-        library: library,
+        library: load_list(deck_name),
         mana_pool: Mana(""),
         report: "turn 0",
         turn: 0,
@@ -36,15 +34,12 @@ func InitialGameState(deck_name string) game_state {
     gs.battlefield = append(gs.battlefield, "Amulet of Vigor")
     gs.battlefield = append(gs.battlefield, "Amulet of Vigor")
 
-
     for _, card := range gs.hand {
         if is_land(card) {
             gs = gs.play(card)
         }
     }
-
     return gs
-
 }
 
 

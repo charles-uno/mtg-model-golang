@@ -30,14 +30,6 @@ func Mana(expr string) mana {
 }
 
 
-func (self *mana) plus(other mana) mana {
-    return mana{
-        green: self.green + other.green,
-        total: self.total + other.total,
-    }
-}
-
-
 func (self *mana) minus(other mana) (mana, error) {
     if self.total < other.total || self.green < other.green {
         return mana{}, errors.New("can't subtract " + self.Pretty() + " - " + other.Pretty())
@@ -52,6 +44,13 @@ func (self *mana) minus(other mana) (mana, error) {
 }
 
 
+func (self *mana) plus(other mana) mana {
+    return mana{
+        green: self.green + other.green,
+        total: self.total + other.total,
+    }
+}
+
 
 func (m *mana) Pretty() string {
     if m.total == 0 {
@@ -65,13 +64,4 @@ func (m *mana) Pretty() string {
         expr += "G"
     }
     return expr
-}
-
-
-func count_runes(s string, r rune) int {
-    count := 0
-    for _, char := range s {
-        if char == r { count += 1 }
-    }
-    return count
 }

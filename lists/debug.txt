@@ -1,13 +1,4 @@
-4 Amulet of Vigor
-4 Arboreal Grazer
-4 Explore
-4 Dryad of the Ilysian Grove
-4 Once Upon a Time
-4 Primeval Titan
-4 Summoner's Pact
-2 Blank
-
-8 Forest
-8 Simic Growth Chamber
-8 Bojuka Bog
-6 Radiant Fountain
+15 Forest
+15 Arboreal Grazer
+15 Simic Growth Chamber
+15 Primeval Titan
